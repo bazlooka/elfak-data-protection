@@ -14,9 +14,9 @@ internal class RC4 : ICryptoAlgorithm
 
     private uint i = 0, j = 0;
 
-    public RC4(string key, Encoding encoding)
+    public RC4(string key)
     {
-        byte[] keyBytes = encoding.GetBytes(key);
+        byte[] keyBytes = Encoding.UTF8.GetBytes(key);
 
         if (keyBytes.Length < 1 || keyBytes.Length > 256)
         {
@@ -25,6 +25,7 @@ internal class RC4 : ICryptoAlgorithm
 
         _key = keyBytes;
         _S = new byte[256];
+        ScheduleKey();
     }
 
     public void ScheduleKey()
@@ -50,7 +51,6 @@ internal class RC4 : ICryptoAlgorithm
 
     public byte[] Encrypt(byte[] input)
     {
-        ScheduleKey();
         byte[] output = new byte[input.Length];
         byte temp;
 
