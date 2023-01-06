@@ -7,7 +7,7 @@ using System.Windows.Forms;
 
 namespace ZI_17714;
 
-internal class RC4 : ICryptoAlgorithm
+internal class RC4
 {
     private readonly byte[] _key;
     private readonly byte[] _S;
@@ -16,7 +16,7 @@ internal class RC4 : ICryptoAlgorithm
 
     public RC4(string key)
     {
-        byte[] keyBytes = Encoding.UTF8.GetBytes(key);
+        byte[] keyBytes = Encoding.Unicode.GetBytes(key);
 
         if (keyBytes.Length < 1 || keyBytes.Length > 256)
         {
@@ -49,9 +49,8 @@ internal class RC4 : ICryptoAlgorithm
         i = j = 0;
     }
 
-    public byte[] Encrypt(byte[] input)
+    public void Encrypt(byte[] input)
     {
-        byte[] output = new byte[input.Length];
         byte temp;
 
         for (int k = 0; k < input.Length; k++)
@@ -63,13 +62,12 @@ internal class RC4 : ICryptoAlgorithm
             _S[i] = _S[j];
             _S[j] = temp;
 
-            output[k] = (byte)(_S[(_S[i] + _S[j]) & 255] ^ input[k]);
+            input[k] = (byte)(_S[(_S[i] + _S[j]) & 255] ^ input[k]);
         }
-        return output;
     }
 
-    public byte[] Decrypt(byte[] input)
+    public void Decrypt(byte[] input)
     {
-        return Encrypt(input);
+        Encrypt(input);
     }
 }

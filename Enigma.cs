@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace ZI_17714;
 
-internal class Enigma : ICryptoAlgorithm
+internal class Enigma : ICryptoAlgorithm<byte[]>
 {
     public byte[] Decrypt(byte[] input)
     {

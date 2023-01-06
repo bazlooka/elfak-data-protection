@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace ZI_17714;
 
-internal class CBC : ICryptoAlgorithm
+internal class CBC : ICryptoAlgorithm<byte[]>
 {
     public byte[] Decrypt(byte[] input)
     {
