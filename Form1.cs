@@ -159,16 +159,48 @@ public partial class Form1 : Form
             using BinaryReader reader = new(fileInputStream);
             using BinaryWriter writer = new(fileOutputStream);
 
-            uint[] buffer = new uint[2];
 
-            while (reader.BaseStream.Position != reader.BaseStream.Length)
-            {
-                buffer[0] = reader.ReadUInt32();
-                buffer[1] = reader.ReadUInt32();
-                tea.Encrypt(buffer);
-                writer.Write(buffer[0]);
-                writer.Write(buffer[1]);
-            }
+
+
+            //uint[] buffer = new uint[2];
+
+            //MessageBox.Show("LEN: " + reader.BaseStream.Length);
+
+            //byte[] buffer = reader.ReadBytes(8);
+            //uint[] uintBuffer = new uint[2];
+
+            //while (buffer.Length == 8 && reader.BaseStream.Position != reader.BaseStream.Length)
+            //{
+            //    uintBuffer[0] = BitConverter.ToUInt32(buffer, 0);
+            //    uintBuffer[1] = BitConverter.ToUInt32(buffer, 4);
+
+            //    tea.Encrypt(uintBuffer);
+
+            //    writer.Write(uintBuffer[0]);
+            //    writer.Write(uintBuffer[1]);
+
+            //    buffer = reader.ReadBytes(4);
+            //}
+
+            //MessageBox.Show("LEN2 " + buffer.Length);
+
+            //if(buffer.Length != 8)
+            //{
+            //    byte[] rest = new byte[8] { 0, 0, 0, 0, 0, 0, 0, 0 };
+
+            //    for(int i = 0; i < buffer.Length; i++)
+            //    {
+            //        rest[i] = buffer[i];
+            //    }
+
+            //    uintBuffer[0] = BitConverter.ToUInt32(rest, 0);
+            //    uintBuffer[1] = BitConverter.ToUInt32(rest, 4);
+
+            //    tea.Encrypt(uintBuffer);
+
+            //    writer.Write(uintBuffer[0]);
+            //    writer.Write(uintBuffer[1]);
+            //}
 
             MessageBox.Show("Enkripcija je uspešna!");
         }
@@ -177,7 +209,6 @@ public partial class Form1 : Form
             MessageBox.Show("Došlo je do greške prilikom čitanja fajla.");
             MessageBox.Show(ex.Message);
         }
-
     }
 
     private void button8_Click(object sender, EventArgs e)
@@ -219,5 +250,12 @@ public partial class Form1 : Form
             MessageBox.Show("Došlo je do greške prilikom čitanja fajla.");
             MessageBox.Show(ex.Message);
         }
+    }
+
+    private void button9_Click(object sender, EventArgs e)
+    {
+        Enigma en = new();
+        string res = en.Encrypt("TESTINGTESTINGTESTINGTESTING");
+        MessageBox.Show(res);
     }
 }
