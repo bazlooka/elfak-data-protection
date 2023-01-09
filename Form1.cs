@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Reflection.Emit;
 using System.Text;
 using System.Windows.Forms;
 using static System.Windows.Forms.VisualStyles.VisualStyleElement.Window;
@@ -12,16 +13,6 @@ public partial class Form1 : Form
         InitializeComponent();
     }
 
-    private byte[] OpenFile(string path)
-    {
-        return File.ReadAllBytes(path);
-    }
-
-    private void SaveFile(string path, byte[] bytes)
-    {
-        File.WriteAllBytes(path, bytes);
-    }
-
     private void Button1_Click(object sender, EventArgs e)
     {
         string key = tbRC4Key.Text;
@@ -29,7 +20,7 @@ public partial class Form1 : Form
 
         try
         {
-            var fileInputStream = openFileDialog.OpenFile();
+            var fileInputStream = openFileDialog1.OpenFile();
             var fileOutputStream = saveFileDialog.OpenFile();
 
             using BinaryReader reader = new(fileInputStream);
@@ -54,9 +45,9 @@ public partial class Form1 : Form
 
     private void button2_Click(object sender, EventArgs e)
     {
-        if (openFileDialog.ShowDialog() == DialogResult.OK)
+        if (openFileDialog1.ShowDialog() == DialogResult.OK)
         {
-            string filePath = openFileDialog.FileName;
+            string filePath = openFileDialog1.FileName;
             string fileExtension = Path.GetExtension(filePath);
 
             label1.Text = filePath;
@@ -73,10 +64,21 @@ public partial class Form1 : Form
 
     private void button3_Click(object sender, EventArgs e)
     {
-        if(saveFileDialog.ShowDialog() == DialogResult.OK)
+        if (tabControl1.SelectedTab.Name == "CRC")
         {
-            var filePath = saveFileDialog.FileName;
-            label2.Text = filePath;
+            if (openFileDialog2.ShowDialog() == DialogResult.OK)
+            {
+                var filePath = openFileDialog2.FileName;
+                label2.Text = filePath;
+            }
+        }
+        else
+        {
+            if (saveFileDialog.ShowDialog() == DialogResult.OK)
+            {
+                var filePath = saveFileDialog.FileName;
+                label2.Text = filePath;
+            }
         }
     }
 
@@ -98,7 +100,7 @@ public partial class Form1 : Form
 
         try
         {
-            var fileInputStream = openFileDialog.OpenFile();
+            var fileInputStream = openFileDialog1.OpenFile();
             var fileOutputStream = saveFileDialog.OpenFile();
 
             using Bitmap bitmap = new(fileInputStream);
@@ -153,7 +155,7 @@ public partial class Form1 : Form
 
         try
         {
-            var fileInputStream = openFileDialog.OpenFile();
+            var fileInputStream = openFileDialog1.OpenFile();
             var fileOutputStream = saveFileDialog.OpenFile();
 
             using BinaryReader reader = new(fileInputStream);
@@ -226,7 +228,7 @@ public partial class Form1 : Form
 
         try
         {
-            var fileInputStream = openFileDialog.OpenFile();
+            var fileInputStream = openFileDialog1.OpenFile();
             var fileOutputStream = saveFileDialog.OpenFile();
 
             using BinaryReader reader = new(fileInputStream);
@@ -257,5 +259,85 @@ public partial class Form1 : Form
         Enigma en = new();
         string res = en.Encrypt("TESTINGTESTINGTESTINGTESTING");
         MessageBox.Show(res);
+    }
+
+    private void button11_Click(object sender, EventArgs e)
+    {
+        string polynom = textBox6.Text;
+        uint intPolynom = uint.Parse(polynom, System.Globalization.NumberStyles.HexNumber);
+
+        int polynomDegree;
+        if (radioButton1.Checked)
+        {
+            polynomDegree = 8;
+        }
+        else
+        {
+            polynomDegree = 32;
+        }
+
+        CRC crc = new(intPolynom, polynomDegree);
+
+        try
+        {
+            var file1Stream = openFileDialog1.OpenFile();
+            var file2Stream = openFileDialog2.OpenFile();
+
+            using BinaryReader reader1 = new(file1Stream);
+            using BinaryReader reader2 = new(file2Stream);
+
+            uint hash1, hash2;
+
+            byte[] buffer;
+
+            while (reader1.BaseStream.Position != reader1.BaseStream.Length)
+            {
+                buffer = reader1.ReadBytes(512);
+                crc.HashNext(buffer);
+            }
+            
+            hash1 = crc.Hash;
+            crc.Restart();
+
+            while (reader2.BaseStream.Position != reader2.BaseStream.Length)
+            {
+                buffer = reader2.ReadBytes(512);
+                crc.HashNext(buffer);
+            }
+
+            hash2 = crc.Hash;
+
+            label12.Text = hash1.ToString();
+            label14.Text = hash2.ToString();
+
+            if(hash1 == hash2)
+            {
+                label15.Text = "Datoteke su iste";
+            }
+            else
+            {
+                label15.Text = "Datoteke nisu iste";
+            }
+
+            MessageBox.Show("Uspešno računanje heša!");
+        }
+        catch
+        {
+            MessageBox.Show("Došlo je do greške prilikom čitanja fajla.");
+        }
+    }
+
+    private void tabControl1_SelectedIndexChanged(object sender, EventArgs e)
+    {
+        if (tabControl1.SelectedTab.Name == "CRC")
+        {
+            groupBox1.Text = "Datoteka 1";
+            groupBox2.Text = "Datoteka 2";
+        }
+        else
+        {
+            groupBox1.Text = "Ulazna datoteka";
+            groupBox2.Text = "Izlazna datoteka";
+        }
     }
 }

@@ -8,30 +8,34 @@ namespace ZI_17714;
 
 internal class CRC
 {
-    private readonly int _polynom;
+    private readonly uint _polynom;
     private readonly int _polynomDegree;
 
-    public CRC(int polynom)
-    {
-        _polynom = polynom;
+    private uint _hash;
+    public uint Hash { get => _hash; }
 
-        int polynomDegre = 0;
-        while ((_polynom >> polynomDegre) > 0)
-        {
-            polynomDegre++;
-        }    
-        _polynomDegree = polynomDegre - 1;
+    public CRC(uint polynom, int polynomDegree)
+    {
+        uint polynomMask = 1;
+        polynomMask <<= polynomDegree;
+
+        _hash = 0;
+        _polynomDegree = polynomDegree;
+        _polynom = polynom | polynomMask;   //Dodavanje jedinice najveće težine
     }
 
-    public uint Hash(byte[] data)
+    public void Restart()
     {
-        const int dataLength = sizeof(byte) * 8;
+        _hash = 0;
+    }
 
-        uint hash = 0;
+    public void HashNext(byte[] data)
+    {
+        const int dataLength = 8;
 
         foreach (byte b in data)
         {
-            uint d = (uint) (b << _polynomDegree);
+            uint d = (uint)(b << _polynomDegree);
 
             uint poly = (uint)(_polynom << dataLength - 1);
 
@@ -39,7 +43,7 @@ internal class CRC
 
             for (int i = 0; i < _polynomDegree; i++)
             {
-                if((checkBit & d) != 0)
+                if ((checkBit & d) != 0)
                 {
                     d ^= poly;
                 }
@@ -47,9 +51,35 @@ internal class CRC
                 poly >>= 1;
             }
 
-            hash ^= d;
+            _hash ^= d;
         }
-
-        return hash;
     }
+
+
+
+    //public void HashNext(byte[] data)
+    //{
+    //    const int dataLength = 8;
+
+    //    foreach (byte b in data)
+    //    {
+    //        ulong d = (uint) (b << _polynomDegree);
+
+    //        ulong poly = (ulong)(_polynom << dataLength - 1);
+
+    //        ulong checkBit = (ulong)(1 << (_polynomDegree + dataLength - 1));
+
+    //        for (int i = 0; i < _polynomDegree; i++)
+    //        {
+    //            if((checkBit & d) != 0)
+    //            {
+    //                d ^= poly;
+    //            }
+    //            checkBit >>= 1;
+    //            poly >>= 1;
+    //        }
+
+    //        _hash ^= d;
+    //    }
+    //}
 }

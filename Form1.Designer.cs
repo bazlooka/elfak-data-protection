@@ -67,16 +67,27 @@
             this.button8 = new System.Windows.Forms.Button();
             this.CBC = new System.Windows.Forms.TabPage();
             this.CRC = new System.Windows.Forms.TabPage();
-            this.groupBox12 = new System.Windows.Forms.GroupBox();
+            this.button11 = new System.Windows.Forms.Button();
+            this.groupBox13 = new System.Windows.Forms.GroupBox();
+            this.label11 = new System.Windows.Forms.Label();
+            this.label13 = new System.Windows.Forms.Label();
+            this.label12 = new System.Windows.Forms.Label();
+            this.label15 = new System.Windows.Forms.Label();
+            this.label14 = new System.Windows.Forms.Label();
             this.groupBox11 = new System.Windows.Forms.GroupBox();
+            this.radioButton2 = new System.Windows.Forms.RadioButton();
+            this.radioButton1 = new System.Windows.Forms.RadioButton();
+            this.label16 = new System.Windows.Forms.Label();
+            this.textBox6 = new System.Windows.Forms.TextBox();
             this.groupBox2 = new System.Windows.Forms.GroupBox();
             this.label2 = new System.Windows.Forms.Label();
             this.button3 = new System.Windows.Forms.Button();
             this.groupBox1 = new System.Windows.Forms.GroupBox();
             this.button2 = new System.Windows.Forms.Button();
             this.label1 = new System.Windows.Forms.Label();
-            this.openFileDialog = new System.Windows.Forms.OpenFileDialog();
+            this.openFileDialog1 = new System.Windows.Forms.OpenFileDialog();
             this.saveFileDialog = new System.Windows.Forms.SaveFileDialog();
+            this.openFileDialog2 = new System.Windows.Forms.OpenFileDialog();
             this.tabControl1.SuspendLayout();
             this.RC4.SuspendLayout();
             this.groupBox7.SuspendLayout();
@@ -91,6 +102,8 @@
             ((System.ComponentModel.ISupportInitialize)(this.numericUpDown1)).BeginInit();
             this.groupBox5.SuspendLayout();
             this.CRC.SuspendLayout();
+            this.groupBox13.SuspendLayout();
+            this.groupBox11.SuspendLayout();
             this.groupBox2.SuspendLayout();
             this.groupBox1.SuspendLayout();
             this.SuspendLayout();
@@ -122,6 +135,7 @@
             this.tabControl1.SelectedIndex = 0;
             this.tabControl1.Size = new System.Drawing.Size(489, 181);
             this.tabControl1.TabIndex = 1;
+            this.tabControl1.SelectedIndexChanged += new System.EventHandler(this.tabControl1_SelectedIndexChanged);
             // 
             // RC4
             // 
@@ -494,7 +508,8 @@
             // 
             // CRC
             // 
-            this.CRC.Controls.Add(this.groupBox12);
+            this.CRC.Controls.Add(this.button11);
+            this.CRC.Controls.Add(this.groupBox13);
             this.CRC.Controls.Add(this.groupBox11);
             this.CRC.Location = new System.Drawing.Point(4, 24);
             this.CRC.Name = "CRC";
@@ -503,23 +518,127 @@
             this.CRC.Text = "CRC";
             this.CRC.UseVisualStyleBackColor = true;
             // 
-            // groupBox12
+            // button11
             // 
-            this.groupBox12.Location = new System.Drawing.Point(355, 3);
-            this.groupBox12.Name = "groupBox12";
-            this.groupBox12.Size = new System.Drawing.Size(123, 147);
-            this.groupBox12.TabIndex = 1;
-            this.groupBox12.TabStop = false;
-            this.groupBox12.Text = "groupBox12";
+            this.button11.Location = new System.Drawing.Point(369, 17);
+            this.button11.Name = "button11";
+            this.button11.Size = new System.Drawing.Size(105, 28);
+            this.button11.TabIndex = 0;
+            this.button11.Text = "Izračunaj heš";
+            this.button11.UseVisualStyleBackColor = true;
+            this.button11.Click += new System.EventHandler(this.button11_Click);
+            // 
+            // groupBox13
+            // 
+            this.groupBox13.Controls.Add(this.label11);
+            this.groupBox13.Controls.Add(this.label13);
+            this.groupBox13.Controls.Add(this.label12);
+            this.groupBox13.Controls.Add(this.label15);
+            this.groupBox13.Controls.Add(this.label14);
+            this.groupBox13.Location = new System.Drawing.Point(3, 56);
+            this.groupBox13.Name = "groupBox13";
+            this.groupBox13.Size = new System.Drawing.Size(475, 94);
+            this.groupBox13.TabIndex = 5;
+            this.groupBox13.TabStop = false;
+            this.groupBox13.Text = "Rezultat";
+            // 
+            // label11
+            // 
+            this.label11.AutoSize = true;
+            this.label11.Location = new System.Drawing.Point(6, 17);
+            this.label11.Name = "label11";
+            this.label11.Size = new System.Drawing.Size(105, 15);
+            this.label11.TabIndex = 0;
+            this.label11.Text = "Heš prve datoteke:";
+            // 
+            // label13
+            // 
+            this.label13.AutoSize = true;
+            this.label13.Location = new System.Drawing.Point(6, 47);
+            this.label13.Name = "label13";
+            this.label13.Size = new System.Drawing.Size(113, 15);
+            this.label13.TabIndex = 2;
+            this.label13.Text = "Heš druge datoteke:";
+            // 
+            // label12
+            // 
+            this.label12.AutoSize = true;
+            this.label12.Font = new System.Drawing.Font("Segoe UI", 9F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point);
+            this.label12.Location = new System.Drawing.Point(6, 32);
+            this.label12.Name = "label12";
+            this.label12.Size = new System.Drawing.Size(0, 15);
+            this.label12.TabIndex = 1;
+            // 
+            // label15
+            // 
+            this.label15.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
+            this.label15.AutoSize = true;
+            this.label15.Font = new System.Drawing.Font("Segoe UI", 9F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point);
+            this.label15.Location = new System.Drawing.Point(366, 72);
+            this.label15.Name = "label15";
+            this.label15.Size = new System.Drawing.Size(0, 15);
+            this.label15.TabIndex = 4;
+            this.label15.TextAlign = System.Drawing.ContentAlignment.MiddleRight;
+            // 
+            // label14
+            // 
+            this.label14.AutoSize = true;
+            this.label14.Font = new System.Drawing.Font("Segoe UI", 9F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point);
+            this.label14.Location = new System.Drawing.Point(7, 62);
+            this.label14.Name = "label14";
+            this.label14.Size = new System.Drawing.Size(0, 15);
+            this.label14.TabIndex = 3;
             // 
             // groupBox11
             // 
+            this.groupBox11.Controls.Add(this.radioButton2);
+            this.groupBox11.Controls.Add(this.radioButton1);
+            this.groupBox11.Controls.Add(this.label16);
+            this.groupBox11.Controls.Add(this.textBox6);
             this.groupBox11.Location = new System.Drawing.Point(3, 3);
             this.groupBox11.Name = "groupBox11";
-            this.groupBox11.Size = new System.Drawing.Size(346, 147);
+            this.groupBox11.Size = new System.Drawing.Size(360, 52);
             this.groupBox11.TabIndex = 0;
             this.groupBox11.TabStop = false;
-            this.groupBox11.Text = "groupBox11";
+            this.groupBox11.Text = "Podešavanja:";
+            // 
+            // radioButton2
+            // 
+            this.radioButton2.AutoSize = true;
+            this.radioButton2.Location = new System.Drawing.Point(72, 19);
+            this.radioButton2.Name = "radioButton2";
+            this.radioButton2.Size = new System.Drawing.Size(65, 19);
+            this.radioButton2.TabIndex = 8;
+            this.radioButton2.Text = "CRC-32";
+            this.radioButton2.UseVisualStyleBackColor = true;
+            // 
+            // radioButton1
+            // 
+            this.radioButton1.AutoSize = true;
+            this.radioButton1.Checked = true;
+            this.radioButton1.Location = new System.Drawing.Point(7, 19);
+            this.radioButton1.Name = "radioButton1";
+            this.radioButton1.Size = new System.Drawing.Size(59, 19);
+            this.radioButton1.TabIndex = 7;
+            this.radioButton1.TabStop = true;
+            this.radioButton1.Text = "CRC-8";
+            this.radioButton1.UseVisualStyleBackColor = true;
+            // 
+            // label16
+            // 
+            this.label16.AutoSize = true;
+            this.label16.Location = new System.Drawing.Point(189, 21);
+            this.label16.Name = "label16";
+            this.label16.Size = new System.Drawing.Size(55, 15);
+            this.label16.TabIndex = 6;
+            this.label16.Text = "Polinom:";
+            // 
+            // textBox6
+            // 
+            this.textBox6.Location = new System.Drawing.Point(250, 18);
+            this.textBox6.Name = "textBox6";
+            this.textBox6.Size = new System.Drawing.Size(100, 23);
+            this.textBox6.TabIndex = 5;
             // 
             // groupBox2
             // 
@@ -532,7 +651,7 @@
             this.groupBox2.Size = new System.Drawing.Size(489, 51);
             this.groupBox2.TabIndex = 4;
             this.groupBox2.TabStop = false;
-            this.groupBox2.Text = "Izlazni fajl";
+            this.groupBox2.Text = "Izlazna datoteka";
             // 
             // label2
             // 
@@ -549,7 +668,7 @@
             this.button3.Name = "button3";
             this.button3.Size = new System.Drawing.Size(75, 23);
             this.button3.TabIndex = 0;
-            this.button3.Text = "Izaberi fajl";
+            this.button3.Text = "Izaberi";
             this.button3.UseVisualStyleBackColor = true;
             this.button3.Click += new System.EventHandler(this.button3_Click);
             // 
@@ -564,7 +683,7 @@
             this.groupBox1.Size = new System.Drawing.Size(489, 47);
             this.groupBox1.TabIndex = 3;
             this.groupBox1.TabStop = false;
-            this.groupBox1.Text = "Ulazni fajl";
+            this.groupBox1.Text = "Ulazna datoteka";
             // 
             // button2
             // 
@@ -573,7 +692,7 @@
             this.button2.Name = "button2";
             this.button2.Size = new System.Drawing.Size(75, 23);
             this.button2.TabIndex = 2;
-            this.button2.Text = "Izaberi fajl";
+            this.button2.Text = "Izaberi";
             this.button2.UseVisualStyleBackColor = true;
             this.button2.Click += new System.EventHandler(this.button2_Click);
             // 
@@ -585,14 +704,18 @@
             this.label1.Size = new System.Drawing.Size(0, 15);
             this.label1.TabIndex = 1;
             // 
-            // openFileDialog
+            // openFileDialog1
             // 
-            this.openFileDialog.FileName = "Ulazni fajl";
-            this.openFileDialog.Filter = "All files(*.*) | *.*";
+            this.openFileDialog1.FileName = "Ulazni fajl";
+            this.openFileDialog1.Filter = "All files(*.*) | *.*";
             // 
             // saveFileDialog
             // 
             this.saveFileDialog.Filter = "All files (*.*)|*.*";
+            // 
+            // openFileDialog2
+            // 
+            this.openFileDialog2.Filter = "All files(*.*) | *.*";
             // 
             // Form1
             // 
@@ -624,6 +747,10 @@
             ((System.ComponentModel.ISupportInitialize)(this.numericUpDown1)).EndInit();
             this.groupBox5.ResumeLayout(false);
             this.CRC.ResumeLayout(false);
+            this.groupBox13.ResumeLayout(false);
+            this.groupBox13.PerformLayout();
+            this.groupBox11.ResumeLayout(false);
+            this.groupBox11.PerformLayout();
             this.groupBox2.ResumeLayout(false);
             this.groupBox2.PerformLayout();
             this.groupBox1.ResumeLayout(false);
@@ -643,7 +770,7 @@
         private TabPage CRC;
         private Button button2;
         private Label label1;
-        private OpenFileDialog openFileDialog;
+        private OpenFileDialog openFileDialog1;
         private GroupBox groupBox1;
         private GroupBox groupBox2;
         private Label label2;
@@ -679,9 +806,20 @@
         private Button button10;
         private Button button9;
         private GroupBox groupBox10;
-        private GroupBox groupBox12;
         private GroupBox groupBox11;
         private ComboBox comboBox1;
         private Label label10;
+        private Label label15;
+        private Label label14;
+        private Label label13;
+        private Label label12;
+        private Label label11;
+        private GroupBox groupBox13;
+        private Label label16;
+        private TextBox textBox6;
+        private Button button11;
+        private OpenFileDialog openFileDialog2;
+        private RadioButton radioButton2;
+        private RadioButton radioButton1;
     }
 }
