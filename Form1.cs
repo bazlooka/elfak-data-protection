@@ -1,8 +1,12 @@
 ﻿using System;
+using System.IO;
 using System.Reflection.Emit;
 using System.Text;
 using System.Windows.Forms;
-using static System.Windows.Forms.VisualStyles.VisualStyleElement.Window;
+
+using ZI_17714.EnigmaAlg;
+using ZI_17714.TEAAlg;
+using static System.Windows.Forms.VisualStyles.VisualStyleElement;
 
 namespace ZI_17714;
 
@@ -13,37 +17,7 @@ public partial class Form1 : Form
         InitializeComponent();
     }
 
-    private void Button1_Click(object sender, EventArgs e)
-    {
-        string key = tbRC4Key.Text;
-        RC4 rc4 = new(key);
-
-        try
-        {
-            var fileInputStream = openFileDialog1.OpenFile();
-            var fileOutputStream = saveFileDialog.OpenFile();
-
-            using BinaryReader reader = new(fileInputStream);
-            using BinaryWriter writer = new(fileOutputStream);
-
-            byte[] buffer;
-
-            while (reader.BaseStream.Position != reader.BaseStream.Length)
-            {
-                buffer = reader.ReadBytes(512);
-                rc4.Encrypt(buffer);
-                writer.Write(buffer);
-            }
-
-            MessageBox.Show("Enkripcija je uspešna!");
-        }
-        catch
-        {
-            MessageBox.Show("Došlo je do greške prilikom čitanja fajla.");
-        }
-    }
-
-    private void button2_Click(object sender, EventArgs e)
+    private void BtnFile1_Click(object sender, EventArgs e)
     {
         if (openFileDialog1.ShowDialog() == DialogResult.OK)
         {
@@ -57,14 +31,9 @@ public partial class Form1 : Form
         }
     }
 
-    private void RC4_Click(object sender, EventArgs e)
+    private void BtnFile2_Click(object sender, EventArgs e)
     {
-        
-    }
-
-    private void button3_Click(object sender, EventArgs e)
-    {
-        if (tabControl1.SelectedTab.Name == "CRC")
+        if (tcAlgorithm.SelectedTab.Name == "CRC")
         {
             if (openFileDialog2.ShowDialog() == DialogResult.OK)
             {
@@ -82,235 +51,275 @@ public partial class Form1 : Form
         }
     }
 
-    private void Form1_Load(object sender, EventArgs e)
+    #region RC4
+
+    private void BtnRc4Encrypt_Click(object sender, EventArgs e)
     {
-
-    }
-
-    private void button4_Click(object sender, EventArgs e)
-    {
-
-    }
-
-    //BITMAP
-    private void button5_Click(object sender, EventArgs e)
-    {
-        string key = tbRC4Key.Text;
-        RC4 rc4 = new(key);
-
         try
         {
+            string key = tbRC4Key.Text;
+            RC4 rc4 = new(key);
+
             var fileInputStream = openFileDialog1.OpenFile();
             var fileOutputStream = saveFileDialog.OpenFile();
 
-            using Bitmap bitmap = new(fileInputStream);
-
-            for(int j = 0; j < bitmap.Height; j++)
-            {
-                for (int i = 0; i < bitmap.Width; i++)
-                {
-                    int pixel = bitmap.GetPixel(i, j).ToArgb();
-                    byte[] buffer = BitConverter.GetBytes(pixel);
-                    rc4.Encrypt(buffer);
-                    pixel = BitConverter.ToInt32(buffer);
-                    bitmap.SetPixel(i, j, Color.FromArgb(pixel));
-                }
-            }
-
-            bitmap.Save(fileOutputStream, System.Drawing.Imaging.ImageFormat.Bmp);
-            fileInputStream.Close();
-            fileOutputStream.Close();
-
-            MessageBox.Show("Enkripcija je uspešna!");
-        }
-        catch
-        {
-            MessageBox.Show("Došlo je do greške prilikom čitanja fajla.");
-        }
-    }
-
-    private void textBox1_KeyPress(object sender, KeyPressEventArgs e)
-    {
-        char c = e.KeyChar;
-        int textLength = textBox1.Text.Length;
-
-        if(textLength >= 8 && c != '\b')
-        {
-            e.Handled = true;
-        }
-    }
-
-    private void button7_Click(object sender, EventArgs e)
-    {
-        byte[] bytes = Encoding.Unicode.GetBytes(textBox1.Text);
-
-        uint[] ints = new uint[4];
-
-        for(int i = 0; i < 4; i++)
-        {
-            ints[i] = BitConverter.ToUInt32(bytes, i * 4);
-        }
-
-        TEA tea = new(ints);
-
-        try
-        {
-            var fileInputStream = openFileDialog1.OpenFile();
-            var fileOutputStream = saveFileDialog.OpenFile();
-
-            using BinaryReader reader = new(fileInputStream);
-            using BinaryWriter writer = new(fileOutputStream);
-
-
-
-
-            //uint[] buffer = new uint[2];
-
-            //MessageBox.Show("LEN: " + reader.BaseStream.Length);
-
-            //byte[] buffer = reader.ReadBytes(8);
-            //uint[] uintBuffer = new uint[2];
-
-            //while (buffer.Length == 8 && reader.BaseStream.Position != reader.BaseStream.Length)
-            //{
-            //    uintBuffer[0] = BitConverter.ToUInt32(buffer, 0);
-            //    uintBuffer[1] = BitConverter.ToUInt32(buffer, 4);
-
-            //    tea.Encrypt(uintBuffer);
-
-            //    writer.Write(uintBuffer[0]);
-            //    writer.Write(uintBuffer[1]);
-
-            //    buffer = reader.ReadBytes(4);
-            //}
-
-            //MessageBox.Show("LEN2 " + buffer.Length);
-
-            //if(buffer.Length != 8)
-            //{
-            //    byte[] rest = new byte[8] { 0, 0, 0, 0, 0, 0, 0, 0 };
-
-            //    for(int i = 0; i < buffer.Length; i++)
-            //    {
-            //        rest[i] = buffer[i];
-            //    }
-
-            //    uintBuffer[0] = BitConverter.ToUInt32(rest, 0);
-            //    uintBuffer[1] = BitConverter.ToUInt32(rest, 4);
-
-            //    tea.Encrypt(uintBuffer);
-
-            //    writer.Write(uintBuffer[0]);
-            //    writer.Write(uintBuffer[1]);
-            //}
+            rc4.EncryptFile(fileInputStream, fileOutputStream);
 
             MessageBox.Show("Enkripcija je uspešna!");
         }
         catch (Exception ex)
         {
-            MessageBox.Show("Došlo je do greške prilikom čitanja fajla.");
-            MessageBox.Show(ex.Message);
+            MessageBox.Show("Došlo je do greške prilikom enkripcije: " + ex.Message);
         }
     }
 
-    private void button8_Click(object sender, EventArgs e)
+    private void BtnRc4Decrypt_Click(object sender, EventArgs e)
     {
-        byte[] bytes = Encoding.Unicode.GetBytes(textBox1.Text);
-
-        uint[] ints = new uint[4];
-
-        for (int i = 0; i < 4; i++)
-        {
-            ints[i] = BitConverter.ToUInt32(bytes, i * 4);
-        }
-
-        TEA tea = new(ints);
-
         try
         {
+            string key = tbRC4Key.Text;
+            RC4 rc4 = new(key);
+
             var fileInputStream = openFileDialog1.OpenFile();
             var fileOutputStream = saveFileDialog.OpenFile();
 
-            using BinaryReader reader = new(fileInputStream);
-            using BinaryWriter writer = new(fileOutputStream);
-
-            uint[] buffer = new uint[2];
-
-            while (reader.BaseStream.Position != reader.BaseStream.Length)
-            {
-                buffer[0] = reader.ReadUInt32();
-                buffer[1] = reader.ReadUInt32();
-                tea.Decrypt(buffer);
-                writer.Write(buffer[0]);
-                writer.Write(buffer[1]);
-            }
+            rc4.DecryptFile(fileInputStream, fileOutputStream);
 
             MessageBox.Show("Dekripcija je uspešna!");
         }
         catch (Exception ex)
         {
-            MessageBox.Show("Došlo je do greške prilikom čitanja fajla.");
-            MessageBox.Show(ex.Message);
+            MessageBox.Show("Došlo je do greške prilikom dekripcije: " + ex.Message);
         }
     }
 
-    private void button9_Click(object sender, EventArgs e)
+    private void BtnRc4EncryptBmp_Click(object sender, EventArgs e)
     {
-        Enigma en = new();
-        string res = en.Encrypt("TESTINGTESTINGTESTINGTESTING");
-        MessageBox.Show(res);
+        try
+        {
+            string key = tbRC4Key.Text;
+            RC4 rc4 = new(key);
+
+            var fileInputStream = openFileDialog1.OpenFile();
+            var fileOutputStream = saveFileDialog.OpenFile();
+
+            rc4.EncryptBitmap(fileInputStream, fileOutputStream);
+
+            MessageBox.Show("Enkripcija bitmape je uspešna!");
+        }
+        catch (Exception ex)
+        {
+            MessageBox.Show("Došlo je do greške prilikom enkripcije bitmape: " + ex.Message);
+        }
     }
 
-    private void button11_Click(object sender, EventArgs e)
+    private void BtnRc4DecryptBmp_Click(object sender, EventArgs e)
     {
-        string polynom = textBox6.Text;
-        uint intPolynom = uint.Parse(polynom, System.Globalization.NumberStyles.HexNumber);
+        try
+        {
+            string key = tbRC4Key.Text;
+            RC4 rc4 = new(key);
+
+            var fileInputStream = openFileDialog1.OpenFile();
+            var fileOutputStream = saveFileDialog.OpenFile();
+
+            rc4.DecryptBitmap(fileInputStream, fileOutputStream);
+
+            MessageBox.Show("Dekripcija bitmape je uspešna!");
+        }
+        catch (Exception ex)
+        {
+            MessageBox.Show("Došlo je do greške prilikom dekripcije bitmape: " + ex.Message);
+        }
+    }
+
+    #endregion RC4
+
+    #region Enigma
+
+    private void BtnEnigmaEncrypt_click(object sender, EventArgs e)
+    {
+        try
+        {
+            string keySettings = tbEnigmaKeySettings.Text;
+            string rotors = tbEnigmaRotors.Text;
+            int reflector = cbEnigmaReflector.SelectedIndex;
+            string plugboard = tbEnigmaPlugboard.Text;
+            string ringSettings = tbEnigmaRingSettings.Text;
+
+            Enigma eningma = new(keySettings, rotors, reflector, plugboard, ringSettings);
+
+            var fileInputStream = openFileDialog1.OpenFile();
+            var fileOutputStream = saveFileDialog.OpenFile();
+
+            eningma.EncryptFile(fileInputStream, fileOutputStream);
+
+            MessageBox.Show("Enkripcija je uspešna!");
+        }
+        catch (Exception ex)
+        {
+            MessageBox.Show("Došlo je do greške prilikom enkripcije: " + ex.Message);
+        }
+    }
+
+    private void BtnEnigmaDecrypt_click(object sender, EventArgs e)
+    {
+        try
+        {
+            string keySettings = tbEnigmaKeySettings.Text;
+            string rotors = tbEnigmaRotors.Text;
+            int reflector = cbEnigmaReflector.SelectedIndex;
+            string plugboard = tbEnigmaPlugboard.Text;
+            string ringSettings = tbEnigmaRingSettings.Text;
+
+            Enigma eningma = new(keySettings, rotors, reflector, plugboard, ringSettings);
+
+            var fileInputStream = openFileDialog1.OpenFile();
+            var fileOutputStream = saveFileDialog.OpenFile();
+
+            eningma.DecryptFile(fileInputStream, fileOutputStream);
+
+            MessageBox.Show("Dekripcija je uspešna!");
+        }
+        catch (Exception ex)
+        {
+            MessageBox.Show("Došlo je do greške prilikom dekripcije: " + ex.Message);
+        }
+    }
+
+    #endregion Enigma
+    #region TEA
+
+    private void TbTEAKey_KeyPress(object sender, KeyPressEventArgs e)
+    {
+        char c = e.KeyChar;
+        int textLength = tbTEAKey.Text.Length;
+
+        if (textLength >= 8 && c != '\b')
+        {
+            e.Handled = true;
+        }
+    }
+
+    private void BtnTEAEncrypt_Click(object sender, EventArgs e)
+    {
+        try
+        {
+            byte[] keyBytes = Encoding.Unicode.GetBytes(tbTEAKey.Text);
+
+            uint[] keyInts = new uint[4];
+
+            for (int i = 0; i < 4; i++)
+            {
+                keyInts[i] = BitConverter.ToUInt32(keyBytes, i * 4);
+            }
+
+            TEA tea;
+
+            if (rbTEAStandard.Checked) 
+            {
+                tea = new TEA(keyInts);
+            }
+            else if (rbTEAwithCBC.Checked)
+            {
+                string hexIV = tbIV.Text[2..];
+
+                uint iv1 = uint.Parse(hexIV[0..4], System.Globalization.NumberStyles.HexNumber);
+                uint iv2 = uint.Parse(hexIV[4..8], System.Globalization.NumberStyles.HexNumber);
+
+                uint[] iv = new uint[] { iv1, iv2 };
+                tea = new CBC(keyInts, iv);
+            }
+            else
+            {
+                int threadCount = (int) nudTEAThreadCount.Value;
+
+                tea = new MultithreadedTEA(keyInts, threadCount);
+            }
+
+            var fileInputStream = openFileDialog1.OpenFile();
+            var fileOutputStream = saveFileDialog.OpenFile();
+
+            tea.EncryptFile(fileInputStream, fileOutputStream);
+
+            MessageBox.Show("Enkripcija je uspešna!");
+        }
+        catch (Exception ex)
+        {
+            MessageBox.Show("Došlo je do greške prilikom enkripcije: " + ex.Message);
+        }
+    }
+
+    private void BtnTEADecrypt_Click(object sender, EventArgs e)
+    {
+        try
+        {
+            byte[] keyBytes = Encoding.Unicode.GetBytes(tbTEAKey.Text);
+
+            uint[] keyInts = new uint[4];
+
+            for (int i = 0; i < 4; i++)
+            {
+                keyInts[i] = BitConverter.ToUInt32(keyBytes, i * 4);
+            }
+
+            uint[] iv = new uint[] { 5, 5 };
+
+            CBC tea = new(keyInts, iv);
+
+            var fileInputStream = openFileDialog1.OpenFile();
+            var fileOutputStream = saveFileDialog.OpenFile();
+
+            tea.DecryptFile(fileInputStream, fileOutputStream);
+
+            MessageBox.Show("Dekripcija je uspešna!");
+        }
+        catch (Exception ex)
+        {
+            MessageBox.Show("Došlo je do greške prilikom dekripcije: " + ex.Message);
+        }
+    }
+
+    #endregion TEA
+    #region CBC
+
+    #endregion CBC
+    #region CRC
+
+    private void BtnCRC_Click(object sender, EventArgs e)
+    {
+        string polynom = textBox6.Text[2..];
+        ulong intPolynom = ulong.Parse(polynom, System.Globalization.NumberStyles.HexNumber);
 
         int polynomDegree;
+
         if (radioButton1.Checked)
         {
             polynomDegree = 8;
+        }
+        else if(radioButton3.Checked)
+        {
+            polynomDegree = 16;
         }
         else
         {
             polynomDegree = 32;
         }
 
-        CRC crc = new(intPolynom, polynomDegree);
-
         try
         {
-            var file1Stream = openFileDialog1.OpenFile();
-            var file2Stream = openFileDialog2.OpenFile();
+            CRC crc = new(intPolynom, polynomDegree);
 
-            using BinaryReader reader1 = new(file1Stream);
-            using BinaryReader reader2 = new(file2Stream);
+            var fileStream1 = openFileDialog1.OpenFile();
+            ulong hash1 = crc.CalculateFileHash(fileStream1);
+           
+            var fileStream2 = openFileDialog2.OpenFile();
+            ulong hash2 = crc.CalculateFileHash(fileStream2);
 
-            uint hash1, hash2;
+            label12.Text = string.Format("0x{0:X}", hash1);
+            label14.Text = string.Format("0x{0:X}", hash2);
 
-            byte[] buffer;
-
-            while (reader1.BaseStream.Position != reader1.BaseStream.Length)
-            {
-                buffer = reader1.ReadBytes(512);
-                crc.HashNext(buffer);
-            }
-            
-            hash1 = crc.Hash;
-            crc.Restart();
-
-            while (reader2.BaseStream.Position != reader2.BaseStream.Length)
-            {
-                buffer = reader2.ReadBytes(512);
-                crc.HashNext(buffer);
-            }
-
-            hash2 = crc.Hash;
-
-            label12.Text = hash1.ToString();
-            label14.Text = hash2.ToString();
-
-            if(hash1 == hash2)
+            if (hash1 == hash2)
             {
                 label15.Text = "Datoteke su iste";
             }
@@ -321,15 +330,17 @@ public partial class Form1 : Form
 
             MessageBox.Show("Uspešno računanje heša!");
         }
-        catch
+        catch (Exception ex)
         {
-            MessageBox.Show("Došlo je do greške prilikom čitanja fajla.");
+            MessageBox.Show("Došlo je do greške prilikom računanja heša: " + ex.Message);
         }
     }
 
-    private void tabControl1_SelectedIndexChanged(object sender, EventArgs e)
+    #endregion CRC
+
+    private void TcAlgorithm_SelectedIndexChanged(object sender, EventArgs e)
     {
-        if (tabControl1.SelectedTab.Name == "CRC")
+        if (tcAlgorithm.SelectedTab.Name == "CRC")
         {
             groupBox1.Text = "Datoteka 1";
             groupBox2.Text = "Datoteka 2";
@@ -339,5 +350,20 @@ public partial class Form1 : Form
             groupBox1.Text = "Ulazna datoteka";
             groupBox2.Text = "Izlazna datoteka";
         }
+    }
+
+    private void RbTEAMultithreaded_CheckedChanged(object sender, EventArgs e)
+    {
+        gbMultithread.Enabled = rbTEAMultithreaded.Checked;
+    }
+
+    private void RbTEAwithCBC_CheckedChanged(object sender, EventArgs e)
+    {
+        gbCBC.Enabled = rbTEAwithCBC.Checked;
+    }
+
+    private void Form1_Load(object sender, EventArgs e)
+    {
+        cbEnigmaReflector.SelectedIndex = 0;
     }
 }

@@ -6,8 +6,8 @@ using System.Threading.Tasks;
 
 namespace ZI_17714;
 
-public interface ICryptoAlgorithm<T>
+public interface ICryptoAlgorithm
 {
-    T Encrypt(T input);
-    T Decrypt(T input);
+    public void EncryptFile(Stream fileInputStream, Stream fileOutputStream);
+    public void DecryptFile(Stream fileInputStream, Stream fileOutputStream);
 }

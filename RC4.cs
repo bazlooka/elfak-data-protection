@@ -7,7 +7,7 @@ using System.Windows.Forms;
 
 namespace ZI_17714;
 
-internal class RC4
+internal class RC4 : ICryptoAlgorithm, IBitmapCryptoAlgorithm
 {
     private readonly byte[] _key;
     private readonly byte[] _S;
@@ -25,10 +25,9 @@ internal class RC4
 
         _key = keyBytes;
         _S = new byte[256];
-        ScheduleKey();
     }
 
-    public void ScheduleKey()
+    private void ScheduleKey()
     {
         for (i = 0; i <= 255; i++)
         {
@@ -49,7 +48,7 @@ internal class RC4
         i = j = 0;
     }
 
-    public void Encrypt(byte[] input)
+    private void Encrypt(byte[] input)
     {
         byte temp;
 
@@ -65,9 +64,55 @@ internal class RC4
             input[k] = (byte)(_S[(_S[i] + _S[j]) & 255] ^ input[k]);
         }
     }
-
-    public void Decrypt(byte[] input)
+    public void EncryptFile(Stream fileInputStream, Stream fileOutputStream)
     {
-        Encrypt(input);
+        ScheduleKey();
+
+        using FileReader fileReader = new(fileInputStream, 1, PadBytes.Zeroes);
+        using BinaryWriter fileWriter = new(fileOutputStream);
+
+        byte[] buffer;
+
+        while(fileReader.HasMoraData())
+        {
+            buffer = fileReader.ReadNextBlock(512);
+            Encrypt(buffer);
+            fileWriter.Write(buffer);
+        }
+    }
+
+    public void DecryptFile(Stream fileInputStream, Stream fileOutputStream)
+    {
+        EncryptFile(fileInputStream, fileOutputStream);
+    }
+
+    public void EncryptBitmap(Stream fileInputStream, Stream fileOutputStream)
+    {
+        ScheduleKey();
+
+        using Bitmap bitmap = new(fileInputStream);
+
+        byte[] buffer;
+
+        for (int j = 0; j < bitmap.Height; j++)
+        {
+            for (int i = 0; i < bitmap.Width; i++)
+            {
+                int pixel = bitmap.GetPixel(i, j).ToArgb();
+                buffer = BitConverter.GetBytes(pixel);
+                Encrypt(buffer);
+                pixel = BitConverter.ToInt32(buffer);
+                bitmap.SetPixel(i, j, Color.FromArgb(pixel));
+            }
+        }
+
+        bitmap.Save(fileOutputStream, System.Drawing.Imaging.ImageFormat.Bmp);
+        fileInputStream.Close();
+        fileOutputStream.Close();
+    }
+
+    public void DecryptBitmap(Stream fileInputStream, Stream fileOutputStream)
+    {
+        EncryptBitmap(fileInputStream, fileOutputStream);
     }
 }
