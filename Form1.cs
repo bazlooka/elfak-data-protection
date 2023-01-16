@@ -231,6 +231,7 @@ public partial class Form1 : Form
                 uint iv2 = uint.Parse(hexIV[4..8], System.Globalization.NumberStyles.HexNumber);
 
                 uint[] iv = new uint[] { iv1, iv2 };
+
                 tea = new CBC(keyInts, iv);
             }
             else
@@ -243,15 +244,8 @@ public partial class Form1 : Form
             var fileInputStream = openFileDialog1.OpenFile();
             var fileOutputStream = saveFileDialog.OpenFile();
 
-            if(rbTEAMultithreaded.Checked)
-            {
-                ((MultithreadedTEA)tea).EncryptFileAsync(fileInputStream, fileOutputStream).Wait();
-            }    
-            else
-            {
-                tea.EncryptFile(fileInputStream, fileOutputStream);
-            }
-            
+            tea.EncryptFile(fileInputStream, fileOutputStream);
+
             MessageBox.Show("Enkripcija je uspešna!");
         }
         catch (Exception ex)
@@ -287,6 +281,7 @@ public partial class Form1 : Form
                 uint iv2 = uint.Parse(hexIV[4..8], System.Globalization.NumberStyles.HexNumber);
 
                 uint[] iv = new uint[] { iv1, iv2 };
+
                 tea = new CBC(keyInts, iv);
             }
             else
@@ -298,15 +293,8 @@ public partial class Form1 : Form
 
             var fileInputStream = openFileDialog1.OpenFile();
             var fileOutputStream = saveFileDialog.OpenFile();
-
-            if (rbTEAMultithreaded.Checked)
-            {
-                ((MultithreadedTEA)tea).DecryptFileAsync(fileInputStream, fileOutputStream).Wait();
-            }
-            else
-            {
-                tea.DecryptFile(fileInputStream, fileOutputStream);
-            }
+  
+            tea.DecryptFile(fileInputStream, fileOutputStream);
 
             MessageBox.Show("Dekripcija je uspešna!");
         }
