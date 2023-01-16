@@ -37,61 +37,73 @@ internal class MultithreadedTEA : TEA
         });
     }
 
-    public override async void EncryptFile(Stream fileInputStream, Stream fileOutputStream)
+    public async Task EncryptFileAsync(Stream fileInputStream, Stream fileOutputStream)
     {
-        using FileReader reader = new(fileInputStream, 8, PadBytes.PadCount);
-        using BinaryWriter writer = new(fileOutputStream);
-
-
-        byte[] file = reader.ReadFile();
-        uint[] uintFile = new uint[file.Length / 4];
-
-        for (int i = 0; i < uintFile.Length; i++)
+        await Task.Run(() =>
         {
-            uintFile[i] = BitConverter.ToUInt32(file, i * 4);
+            using FileReader reader = new(fileInputStream, 8, PadBytes.PadCount);
+            using BinaryWriter writer = new(fileOutputStream);
+
+            byte[] file = reader.ReadFile();
+            uint[] uintFile = new uint[file.Length / 4];
+
+            for (int i = 0; i < uintFile.Length; i++)
+            {
+                uintFile[i] = BitConverter.ToUInt32(file, i * 4);
+            }
+
+            Task[] tasks = new Task[_threadCount];
+
+            for (int i = 0; i < _threadCount; i++)
+            {
+                tasks[i] = Encrypt(i, uintFile);
+            }
+
+            Task.WhenAll(tasks).Wait();
+
+            foreach (uint i in uintFile)
+            {
+                writer.Write(i);
+            }
+
+            reader.Dispose();
+            writer.Dispose();
         }
-
-        Task[] tasks = new Task[_threadCount];
-
-        for (int i = 0; i < _threadCount; i++)
-        {
-            tasks[i] = Encrypt(i, uintFile);
-        }
-
-        await Task.WhenAll(tasks);
-
-        foreach (uint i in uintFile)
-        {
-            writer.Write(i);
-        }
+        );
     }
 
-    public override async void DecryptFile(Stream fileInputStream, Stream fileOutputStream)
+    public async Task DecryptFileAsync(Stream fileInputStream, Stream fileOutputStream)
     {
-        using FileReader reader = new(fileInputStream, 8, PadBytes.PadCount);
-        using BinaryWriter writer = new(fileOutputStream);
-
-
-        byte[] file = reader.ReadFile();
-        uint[] uintFile = new uint[file.Length / 4];
-
-        for (int i = 0; i < uintFile.Length; i++)
+        await Task.Run(async () =>
         {
-            uintFile[i] = BitConverter.ToUInt32(file, i * 4);
+            using FileReader reader = new(fileInputStream, 8, PadBytes.PadCount);
+            using BinaryWriter writer = new(fileOutputStream);
+
+            byte[] file = reader.ReadFile();
+            uint[] uintFile = new uint[file.Length / 4];
+
+            for (int i = 0; i < uintFile.Length; i++)
+            {
+                uintFile[i] = BitConverter.ToUInt32(file, i * 4);
+            }
+
+            Task[] tasks = new Task[_threadCount];
+
+            for (int i = 0; i < _threadCount; i++)
+            {
+                tasks[i] = Decrypt(i, uintFile);
+            }
+
+            await Task.WhenAll(tasks);
+
+            foreach (uint i in uintFile)
+            {
+                writer.Write(i);
+            }
+
+            reader.Dispose();
+            writer.Dispose();
         }
-
-        Task[] tasks = new Task[_threadCount];
-
-        for (int i = 0; i < _threadCount; i++)
-        {
-            tasks[i] = Decrypt(i, uintFile);
-        }
-
-        await Task.WhenAll(tasks);
-
-        foreach (uint i in uintFile)
-        {
-            writer.Write(i);
-        }
+        );   
     }
 }

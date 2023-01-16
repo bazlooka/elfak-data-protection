@@ -111,7 +111,7 @@ namespace ZI_17714
                 int i = input.Length - 1;
                 byte endByte = input[i];
 
-                while (input[i] == endByte)
+                while (i > 0 && input[i] == endByte)
                 {
                     endByteCount++;
                     i--;

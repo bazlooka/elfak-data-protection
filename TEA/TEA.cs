@@ -77,9 +77,11 @@ internal class TEA : ICryptoAlgorithm
         using FileReader reader = new(fileInputStream, 8, PadBytes.PadCount);
         using BinaryWriter writer = new(fileOutputStream);
 
+        const int blockSize = 512;
+
         while (reader.HasMoraData())
         {
-            byte[] buffer = reader.ReadNextBlock(512);
+            byte[] buffer = reader.ReadNextBlock(blockSize);
 
             uint[] uintBuffer = new uint[buffer.Length / 4];
 

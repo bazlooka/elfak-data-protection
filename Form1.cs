@@ -10,6 +10,9 @@ using static System.Windows.Forms.VisualStyles.VisualStyleElement;
 
 namespace ZI_17714;
 
+//Napomena: Svi algoritmi, osim multithreaded-TEA, učitavaju i obrađuju
+//blok po blok nekog fajla preko buffera, tako da je izbegnuto neželjeno
+//učitavanje velikih fajlova u memoriju.
 public partial class Form1 : Form
 {
     public Form1()
@@ -240,8 +243,15 @@ public partial class Form1 : Form
             var fileInputStream = openFileDialog1.OpenFile();
             var fileOutputStream = saveFileDialog.OpenFile();
 
-            tea.EncryptFile(fileInputStream, fileOutputStream);
-
+            if(rbTEAMultithreaded.Checked)
+            {
+                ((MultithreadedTEA)tea).EncryptFileAsync(fileInputStream, fileOutputStream).Wait();
+            }    
+            else
+            {
+                tea.EncryptFile(fileInputStream, fileOutputStream);
+            }
+            
             MessageBox.Show("Enkripcija je uspešna!");
         }
         catch (Exception ex)
@@ -263,14 +273,40 @@ public partial class Form1 : Form
                 keyInts[i] = BitConverter.ToUInt32(keyBytes, i * 4);
             }
 
-            uint[] iv = new uint[] { 5, 5 };
+            TEA tea;
 
-            CBC tea = new(keyInts, iv);
+            if (rbTEAStandard.Checked)
+            {
+                tea = new TEA(keyInts);
+            }
+            else if (rbTEAwithCBC.Checked)
+            {
+                string hexIV = tbIV.Text[2..];
+
+                uint iv1 = uint.Parse(hexIV[0..4], System.Globalization.NumberStyles.HexNumber);
+                uint iv2 = uint.Parse(hexIV[4..8], System.Globalization.NumberStyles.HexNumber);
+
+                uint[] iv = new uint[] { iv1, iv2 };
+                tea = new CBC(keyInts, iv);
+            }
+            else
+            {
+                int threadCount = (int)nudTEAThreadCount.Value;
+
+                tea = new MultithreadedTEA(keyInts, threadCount);
+            }
 
             var fileInputStream = openFileDialog1.OpenFile();
             var fileOutputStream = saveFileDialog.OpenFile();
 
-            tea.DecryptFile(fileInputStream, fileOutputStream);
+            if (rbTEAMultithreaded.Checked)
+            {
+                ((MultithreadedTEA)tea).DecryptFileAsync(fileInputStream, fileOutputStream).Wait();
+            }
+            else
+            {
+                tea.DecryptFile(fileInputStream, fileOutputStream);
+            }
 
             MessageBox.Show("Dekripcija je uspešna!");
         }

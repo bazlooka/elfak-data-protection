@@ -8,6 +8,6 @@ namespace ZI_17714;
 
 public interface ICryptoAlgorithm
 {
-    public void EncryptFile(Stream fileInputStream, Stream fileOutputStream);
-    public void DecryptFile(Stream fileInputStream, Stream fileOutputStream);
+    void EncryptFile(Stream fileInputStream, Stream fileOutputStream);
+    void DecryptFile(Stream fileInputStream, Stream fileOutputStream);
 }
