@@ -7,7 +7,7 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
 
-namespace ZI_17714;
+namespace ZI_17714.CRCAlg;
 
 internal class CRC
 {
@@ -34,7 +34,7 @@ internal class CRC
     public ulong CalculateFileHash(Stream fileStream)
     {
         Restart();
-   
+
         using FileReader reader = new(fileStream, _polynomDegree / 8, PadBytes.Zeroes);
 
         while (reader.HasMoraData())
@@ -65,7 +65,7 @@ internal class CRC
                     uintData[i] = BitConverter.ToUInt32(data, i * 4);
                 }
 
-                convertedData = uintData.Select(item => (ulong)item).ToArray();  
+                convertedData = uintData.Select(item => (ulong)item).ToArray();
             }
 
             HashNext(convertedData);
@@ -85,7 +85,7 @@ internal class CRC
 
             poly = _polynom << dataLength - 1;
 
-            checkBit = (ulong)1 << (_polynomDegree + dataLength - 1);
+            checkBit = (ulong)1 << _polynomDegree + dataLength - 1;
 
             for (int i = 0; i < _polynomDegree; i++)
             {

@@ -5,7 +5,7 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
 
-namespace ZI_17714;
+namespace ZI_17714.RC4Alg;
 
 internal class RC4 : ICryptoAlgorithm, IBitmapCryptoAlgorithm
 {
@@ -31,7 +31,7 @@ internal class RC4 : ICryptoAlgorithm, IBitmapCryptoAlgorithm
     {
         for (i = 0; i <= 255; i++)
         {
-            _S[i] = (byte) i;
+            _S[i] = (byte)i;
         }
 
         byte temp;
@@ -39,7 +39,7 @@ internal class RC4 : ICryptoAlgorithm, IBitmapCryptoAlgorithm
 
         for (i = 0; i <= 255; i++)
         {
-            j = (j + _key[i % _key.Length] + _S[i]) & 255;
+            j = j + _key[i % _key.Length] + _S[i] & 255;
 
             temp = _S[i];
             _S[i] = _S[j];
@@ -54,14 +54,14 @@ internal class RC4 : ICryptoAlgorithm, IBitmapCryptoAlgorithm
 
         for (int k = 0; k < input.Length; k++)
         {
-            i = (i + 1) & 255;
-            j = (j + _S[i]) & 255;
+            i = i + 1 & 255;
+            j = j + _S[i] & 255;
 
             temp = _S[i];
             _S[i] = _S[j];
             _S[j] = temp;
 
-            input[k] = (byte)(_S[(_S[i] + _S[j]) & 255] ^ input[k]);
+            input[k] = (byte)(_S[_S[i] + _S[j] & 255] ^ input[k]);
         }
     }
     public void EncryptFile(Stream fileInputStream, Stream fileOutputStream)
@@ -73,7 +73,7 @@ internal class RC4 : ICryptoAlgorithm, IBitmapCryptoAlgorithm
 
         byte[] buffer;
 
-        while(fileReader.HasMoraData())
+        while (fileReader.HasMoraData())
         {
             buffer = fileReader.ReadNextBlock(512);
             Encrypt(buffer);

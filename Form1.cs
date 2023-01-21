@@ -6,13 +6,11 @@ using System.Windows.Forms;
 
 using ZI_17714.EnigmaAlg;
 using ZI_17714.TEAAlg;
-using static System.Windows.Forms.VisualStyles.VisualStyleElement;
+using ZI_17714.CRCAlg;
+using ZI_17714.RC4Alg;
 
 namespace ZI_17714;
 
-//Napomena: Svi algoritmi, osim multithreaded-TEA, učitavaju i obrađuju
-//blok po blok nekog fajla preko buffera, tako da je izbegnuto neželjeno
-//učitavanje velikih fajlova u memoriju.
 public partial class Form1 : Form
 {
     public Form1()
@@ -137,7 +135,6 @@ public partial class Form1 : Form
     }
 
     #endregion RC4
-
     #region Enigma
 
     private void BtnEnigmaEncrypt_click(object sender, EventArgs e)
@@ -305,9 +302,6 @@ public partial class Form1 : Form
     }
 
     #endregion TEA
-    #region CBC
-
-    #endregion CBC
     #region CRC
 
     private void BtnCRC_Click(object sender, EventArgs e)

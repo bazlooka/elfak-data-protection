@@ -184,7 +184,6 @@
             this.tbRC4Key.Name = "tbRC4Key";
             this.tbRC4Key.Size = new System.Drawing.Size(185, 23);
             this.tbRC4Key.TabIndex = 2;
-            this.tbRC4Key.Text = "  ";
             // 
             // groupBox4
             // 
