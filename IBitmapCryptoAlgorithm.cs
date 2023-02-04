@@ -8,6 +8,6 @@ namespace ZI_17714;
 
 internal interface IBitmapCryptoAlgorithm
 {
-    public void EncryptBitmap(Stream fileInputStream, Stream fileOutputStream);
-    public void DecryptBitmap(Stream fileInputStream, Stream fileOutputStream);
+    void EncryptBitmap(Stream fileInputStream, Stream fileOutputStream);
+    void DecryptBitmap(Stream fileInputStream, Stream fileOutputStream);
 }
